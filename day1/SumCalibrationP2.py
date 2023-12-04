@@ -17,7 +17,6 @@ digitDict = {
     "seven":7,
     "eight":8,
     "nine":9,
-    "":0,
     }
 def convertInt(myStr):
     if myStr.isdigit():
