@@ -1,3 +1,4 @@
+""" Solution to Advent of Code, 2023 - Day 2 Puzzle 2 """
 #!/usr/bin/python3
 import re
 from os.path import dirname, join
@@ -38,8 +39,5 @@ for line in lines:
     RMAX = find_max(redList)
     BMAX = find_max(blueList)
 
-    if ( GMAX <= ACTUALGREEN and BMAX <= ACTUALBLUE
-         and RMAX <= ACTUALRED ):
-        ANSWER += int(game[0])
-
+    ANSWER += (GMAX * RMAX * BMAX )
 print(ANSWER)
