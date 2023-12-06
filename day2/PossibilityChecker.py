@@ -5,41 +5,41 @@ from os.path import dirname, join
 CurrentDir = dirname(__file__)
 FilePath = join(CurrentDir, "./input.txt")
 
-file = open( FilePath, "+r" )
-lines = file.readlines()
+with open(FilePath, encoding="utf-8") as file:
+    lines = file.readlines()
 
-greenPattern = r'(\d+) green'
-bluePattern = r'(\d+) blue'
-redPattern = r'(\d+) red'
-gamePattern = r'Game (\d+):'
+GREENPATTERN = r'(\d+) green'
+BLUEPATTERN = r'(\d+) blue'
+REDPATTERN = r'(\d+) red'
+GAMEPATTERN = r'Game (\d+):'
 
 # 12 red cubes, 13 green cubes, and 14 blue cubes
-ActualGreen = 13
-ActualRed = 12
-ActualBlue = 14
+ACTUALGREEN = 13
+ACTUALRED = 12
+ACTUALBLUE = 14
 
-Answer = 0
+ANSWER = 0
 
-def findMax(list):
-    tempMax = 0
-    for i in list:
-        iVal = int(i)
-        if ( tempMax <= iVal ):
-            tempMax = iVal
-    return (tempMax)
+def find_max(arg_list):
+    """Simple function to return max variable in list"""
+    temp_max = 0
+    for i in arg_list:
+        ival = int(i)
+        temp_max = max(temp_max, ival)
+    return temp_max
 
 for line in lines:
-    greenList = re.findall(greenPattern, line)
-    redList = re.findall(redPattern, line)
-    blueList = re.findall(bluePattern, line)
-    game = re.findall(gamePattern, line)
+    greenList = re.findall(GREENPATTERN, line)
+    redList = re.findall(REDPATTERN, line)
+    blueList = re.findall(BLUEPATTERN, line)
+    game = re.findall(GAMEPATTERN, line)
 
-    greenMax = findMax(greenList)
-    redMax = findMax(redList)
-    blueMax = findMax(blueList)
+    GMAX = find_max(greenList)
+    RMAX = find_max(redList)
+    BMAX = find_max(blueList)
 
-    if ( greenMax <= ActualGreen and blueMax <= ActualBlue 
-         and redMax <= ActualRed ):
-        Answer += int(game[0])
+    if ( GMAX <= ACTUALGREEN and BMAX <= ACTUALBLUE
+         and RMAX <= ACTUALRED ):
+        ANSWER += int(game[0])
 
-print(Answer)
+print(ANSWER)
