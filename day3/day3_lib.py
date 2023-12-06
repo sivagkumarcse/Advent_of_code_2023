@@ -3,8 +3,6 @@ from curses.ascii import isxdigit
 from enum import IntEnum
 from os.path import dirname, join
 
-# class syntax
-
 InputFileList = [
     "./input_sample_1.txt",
     "./input_sample_2.txt",
@@ -39,13 +37,14 @@ class Day3Lib():
         self.max_column = len(lines[0]) - 1
         return lines
 
-    def find_surrounding_indices(self, x, y, maxX=0, maxY=0, corner=False ):
+    def find_surrounding_indices(self, x, y, max_x=0, max_y=0, corner=False ):
+        """ Find possible indices in a 2D matrix """
         index_list = []
         #For strings not in corner, just check up and below
         if not corner:
             if x != 0:
                 index_list.append( [x-1,y] )
-            if x != maxX-1:
+            if x != max_x-1:
                 index_list.append( [x+1,y] )
             return index_list
 
@@ -54,19 +53,19 @@ class Day3Lib():
             if y != 0:
                 index_list.append( [x-1, y-1] )
             index_list.append( [x-1, y] )
-            if y != maxY-1:
+            if y != max_y-1:
                 index_list.append( [x-1, y+1] )
 
         if y != 0:
             index_list.append( [x, y-1] )
-        if y != maxY-1:
+        if y != max_y-1:
             index_list.append( [x, y+1] )
 
-        if x != maxX-1: # Ignore +1 row, if last row
+        if x != max_x-1: # Ignore +1 row, if last row
             if y != 0:
                 index_list.append( [x+1, y-1] )
             index_list.append( [x+1, y] )
-            if y != maxY-1 :
+            if y != max_y-1 :
                 index_list.append( [x+1, y+1] )
         return index_list
 

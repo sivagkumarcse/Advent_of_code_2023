@@ -19,7 +19,7 @@ class WinningCombination(Day6lib):
         """" Do math to find the winning combination """
         lcombination = 0
 
-        # Solution is a bell curve, fails at range 0th millisecond to 
+        # Solution is a bell curve, fails at range 0th millisecond to
         # lcombination and then passes for a range, then failure happens
         # again in range lcombination to last millisecond
         for combination in range (0, time):

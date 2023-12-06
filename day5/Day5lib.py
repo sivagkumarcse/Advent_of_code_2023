@@ -1,8 +1,6 @@
 from enum import IntEnum
 from os.path import dirname, join
 
-# class syntax
-
 InputFileList = [
     "./input_sample_1.txt",
     "./input_sample_2.txt",
