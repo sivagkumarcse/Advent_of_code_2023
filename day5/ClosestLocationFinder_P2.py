@@ -25,11 +25,12 @@ class ClosestLocationFinder(Day5lib):
     def checkLocneeded(self, loc, tableIndex):
         #print(loc, tableIndex)
         if ( tableIndex == 1 ):
-            if (loc in self.inputArray[tableIndex-1]):
-                print(f"Selected seed is {loc}")
-                return True
-            else:
-                return False
+            for seedSeries in range (0, int(len(self.inputArray[0])/2)):
+                if (loc in range (self.inputArray[0][seedSeries*2], \
+                    self.inputArray[0][seedSeries*2] + self.inputArray[0][(seedSeries*2)+1] - 1)):
+                    print(f"Selected seed is {loc}")
+                    return True
+            return False
         else:
             table = self.inputArray[tableIndex-1]
             providedmap = False
