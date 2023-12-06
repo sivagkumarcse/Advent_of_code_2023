@@ -7,6 +7,7 @@ class GearCalulator(Day3Lib):
     """ class for solution to puzzle 2 """
     PNpattern = re.compile( r'(\d+)' )
     GearPair = {}
+    max_pos = None
 
     def run(self):
         """ run method"""
@@ -20,7 +21,7 @@ class GearCalulator(Day3Lib):
 
         # SAMPLE_INPUT_1 or ORIGINAL_INPUT
         content = Day3Lib.read_file_content(self, InputLoc.ORIGINAL_INPUT)
-        max_pos = Position(self.max_row, self.max_column)
+        self.max_pos = Position(self.max_row, self.max_column)
 
        # For every line
         for line in content:
@@ -35,7 +36,7 @@ class GearCalulator(Day3Lib):
                     pos.x = line_nu
                     pos.y = i
                     index_list.extend( self.find_surrounding_indices
-                                      ( pos, max_pos, corner=corner ) )
+                                      ( pos, self.max_pos, corner=corner ) )
 
                 # Remove duplicate indices to check
                 for item in index_list:
