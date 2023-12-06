@@ -52,7 +52,7 @@ class ClosestLocationFinder(Day5lib):
     def main(self):
         """ main method """
         # Use SAMPLE_INPUT_1 or ORIGINAL_INPUT
-        content = self.read_file_content(InputLoc.SAMPLE_INPUT_1)
+        content = self.read_file_content(InputLoc.ORIGINAL_INPUT)
         arr_ind = -1
         for line in content:
             match = re.findall(r'([\d]+)', line)

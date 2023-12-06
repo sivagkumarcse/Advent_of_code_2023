@@ -1,0 +1,7 @@
+Puzzle 1
+========
+Selected seed is 850939
+Min Location is 157211394
+
+Puzzle 2
+========
