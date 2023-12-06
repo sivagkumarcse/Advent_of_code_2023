@@ -17,29 +17,32 @@ class WinningCombination(Day6lib):
 
     def find_winning_combination(self, time, dist):
         """" Do math to find the winning combination """
-        wcombination = 0
+        lcombination = 0
 
+        # Solution is a bell curve, fails at range 0th millisecond to 
+        # lcombination and then passes for a range, then failure happens
+        # again in range lcombination to last millisecond
         for combination in range (0, time):
-            if combination * (time-combination) > dist:
-                wcombination+=1
-        return wcombination
+            if combination * (time-combination) < dist:
+                lcombination+=1
+            else:
+                break
+        # Result include time: last milli second, but not 0th.
+        # Hence add 1
+        return time - lcombination*2 + 1
 
     def main(self):
         """ Main method """
-        solution = None
-
         # Use either SAMPLE_INPUT_1 or ORIGINAL_INPUT
         content = self.read_file_content(InputLoc.ORIGINAL_INPUT)
 
         # Read inputs from file
-        input_time_arr = list( map (int, re.findall(r'([\d]+)', content[0]) ))
-        input_dist_arr = list( map (int, re.findall(r'([\d]+)', content[1]) ))
+        input_time_arr = re.findall(r'([\d]+)', content[0])
+        time = int( ''.join(input_time_arr) )
+        input_dist_arr = re.findall(r'([\d]+)', content[1])
+        dist = int( ''.join(input_dist_arr) )
 
-        for (time, dist) in zip( input_time_arr, input_dist_arr ):
-            if solution:
-                solution *= self.find_winning_combination( time, dist )
-            else:
-                solution = self.find_winning_combination( time, dist )
+        solution = self.find_winning_combination( time, dist )
 
         print( f"Winning combinatios multiplier is {solution}" )
 
