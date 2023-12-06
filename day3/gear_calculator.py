@@ -27,11 +27,8 @@ class GearCalulator(Day3Lib):
                 index_list_temp = []
 
                 for i in range( pn.span()[0], pn.span()[1] ):
-                    if ( i == pn.span()[0] ) or \
-                       ( i == pn.span()[1] - 1):
-                        corner = True
-                    else:
-                        corner = False
+                    # Check if index is first or last character
+                    corner = (i in (pn.span()[0], pn.span()[1] - 1))
                     index_list.extend( self.find_surrounding_indices
                                       ( line_nu, i,
                                         self.max_row,

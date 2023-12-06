@@ -19,7 +19,7 @@ class PointCard():
     card_number = 0
     winning_list = []
     scratch_list = []
-    successfulScratch = 0
+    successful_scratch = 0
     count = 0
 
     def __init__(self, index, winning_list, scratch_list) -> None:

@@ -41,12 +41,12 @@ class PointCalculator(Day4lib):
 
                 for i in scratch_list:
                     if i in winning_list:
-                        point_card.successfulScratch += 1
+                        point_card.successful_scratch += 1
 
         # Process scratches
         for card in self.point_cards:
             cur_card_number = int(card.card_number)
-            end_card_number = cur_card_number + (card.successfulScratch)
+            end_card_number = cur_card_number + (card.successful_scratch)
             for next_card_index in range(cur_card_number + 1, end_card_number + 1):
                 self.point_cards[next_card_index].count += card.count
 
