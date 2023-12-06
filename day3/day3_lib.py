@@ -9,6 +9,15 @@ InputFileList = [
     "./input.txt",
 ]
 
+class Position():
+    """ Class to locate a char in 2D array """
+    x: int
+    y: int
+
+    def __init__( self, x=0, y=0 ):
+        self.x = x
+        self.y = y
+
 class InputLoc(IntEnum):
     """ Enum to select input file """
     SAMPLE_INPUT_1 = 0
@@ -37,36 +46,36 @@ class Day3Lib():
         self.max_column = len(lines[0]) - 1
         return lines
 
-    def find_surrounding_indices(self, x, y, max_x=0, max_y=0, corner=False ):
+    def find_surrounding_indices(self, pos, max_pos, corner=False ):
         """ Find possible indices in a 2D matrix """
         index_list = []
         #For strings not in corner, just check up and below
         if not corner:
-            if x != 0:
-                index_list.append( [x-1,y] )
-            if x != max_x-1:
-                index_list.append( [x+1,y] )
+            if pos.x != 0:
+                index_list.append( [pos.x-1,pos.y] )
+            if pos.x != max_pos.x-1:
+                index_list.append( [pos.x+1,pos.y] )
             return index_list
 
         # If corner need to deduce 8 adjacent elements
-        if x != 0: # Ignore -1 row, if first row
-            if y != 0:
-                index_list.append( [x-1, y-1] )
-            index_list.append( [x-1, y] )
-            if y != max_y-1:
-                index_list.append( [x-1, y+1] )
+        if pos.x != 0: # Ignore -1 row, if first row
+            if pos.y != 0:
+                index_list.append( [pos.x-1, pos.y-1] )
+            index_list.append( [pos.x-1, pos.y] )
+            if pos.y != max_pos.y-1:
+                index_list.append( [pos.x-1, pos.y+1] )
 
-        if y != 0:
-            index_list.append( [x, y-1] )
-        if y != max_y-1:
-            index_list.append( [x, y+1] )
+        if pos.y != 0:
+            index_list.append( [pos.x, pos.y-1] )
+        if pos.y != max_pos.y-1:
+            index_list.append( [pos.x, pos.y+1] )
 
-        if x != max_x-1: # Ignore +1 row, if last row
-            if y != 0:
-                index_list.append( [x+1, y-1] )
-            index_list.append( [x+1, y] )
-            if y != max_y-1 :
-                index_list.append( [x+1, y+1] )
+        if pos.x != max_pos.x-1: # Ignore +1 row, if last row
+            if pos.y != 0:
+                index_list.append( [pos.x+1, pos.y-1] )
+            index_list.append( [pos.x+1, pos.y] )
+            if pos.y != max_pos.y-1 :
+                index_list.append( [pos.x+1, pos.y+1] )
         return index_list
 
     def symbol_checker( self, character ):

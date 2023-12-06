@@ -1,7 +1,7 @@
 """ Solution to Advent of Code, 2023 - Day 3 Puzzle 2 """
 #!/usr/bin/python3
 import re
-from day3_lib import Day3Lib, InputLoc
+from day3_lib import Day3Lib, InputLoc, Position
 
 class GearCalulator(Day3Lib):
     """ class for solution to puzzle 2 """
@@ -16,8 +16,11 @@ class GearCalulator(Day3Lib):
         """ main method """
         line_nu = 0
         sum_gear_ratio = 0
+        pos = Position()
+
         # SAMPLE_INPUT_1 or ORIGINAL_INPUT
         content = Day3Lib.read_file_content(self, InputLoc.ORIGINAL_INPUT)
+        max_pos = Position(self.max_row, self.max_column)
 
        # For every line
         for line in content:
@@ -29,11 +32,10 @@ class GearCalulator(Day3Lib):
                 for i in range( pn.span()[0], pn.span()[1] ):
                     # Check if index is first or last character
                     corner = (i in (pn.span()[0], pn.span()[1] - 1))
+                    pos.x = line_nu
+                    pos.y = i
                     index_list.extend( self.find_surrounding_indices
-                                      ( line_nu, i,
-                                        self.max_row,
-                                        self.max_column,
-                                        corner=corner ) )
+                                      ( pos, max_pos, corner=corner ) )
 
                 # Remove duplicate indices to check
                 for item in index_list:
