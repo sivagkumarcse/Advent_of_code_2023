@@ -14,8 +14,8 @@ class InputLoc(IntEnum):
     SAMPLE_INPUT_2 = 1
     ORIGINAL_INPUT = 2
 
-class Day9lib():
-    """ Base class for Day 9 puzzle """
+class Day8lib():
+    """ Base class for Day 8 puzzle """
     max_row = 0
     max_column = 0
 
@@ -34,23 +34,3 @@ class Day9lib():
         self.max_row = len(lines)
         self.max_column = len(lines[0]) - 1
         return lines
-
-    def next_value_predict(self, int_list, history=False):
-        next_list = []
-        local_return = True
-
-        for i in range (0, len(int_list) - 1):
-            next_list.append(int_list[ i+1 ] - int_list[ i ])
-            if (next_list[ i ] != 0 and local_return):
-                local_return = False
-
-        if (local_return):
-            return int_list[ 0 ]
-        
-        next_val_iter = self.next_value_predict(next_list, history)
-        if history:
-            int_list.append( int_list[0] - next_val_iter )
-        else:
-            int_list.append( int_list[-1] + next_val_iter )
-
-        return(int_list[-1])
