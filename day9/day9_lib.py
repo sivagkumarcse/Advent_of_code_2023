@@ -36,6 +36,7 @@ class Day9lib():
         return lines
 
     def next_value_predict(self, int_list, history=False):
+        """ Predict next and previous values"""
         next_list = []
         local_return = True
 
@@ -44,13 +45,13 @@ class Day9lib():
             if (next_list[ i ] != 0 and local_return):
                 local_return = False
 
-        if (local_return):
+        if local_return:
             return int_list[ 0 ]
-        
+
         next_val_iter = self.next_value_predict(next_list, history)
         if history:
             int_list.append( int_list[0] - next_val_iter )
         else:
             int_list.append( int_list[-1] + next_val_iter )
 
-        return(int_list[-1])
+        return int_list[-1]

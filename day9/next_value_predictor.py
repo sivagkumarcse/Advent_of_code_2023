@@ -1,6 +1,5 @@
 """ Puzzle 1 """
 #!/usr/bin/python3
-import re
 from day9_lib import Day9lib
 from day9_lib import InputLoc
 
