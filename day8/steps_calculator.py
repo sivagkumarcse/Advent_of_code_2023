@@ -1,4 +1,4 @@
-""" Puzzle 1 """
+""" Puzzle 1 and 2 """
 #!/usr/bin/python3
 import sys
 from math import lcm
@@ -6,7 +6,7 @@ from day8_lib import Day8lib
 from day8_lib import InputLoc
 
 class StepsCalculator(Day8lib):
-    """ Puzzle 1 solution """
+    """ Puzzle 1 and 2 solution """
     sum_of_prediction = 0
 
     def run(self):

@@ -1,10 +1,10 @@
-""" Puzzle 1 """
+""" Puzzle 1 and 2 """
 #!/usr/bin/python3
 from day9_lib import Day9lib
 from day9_lib import InputLoc
 
 class NextValuePredictor(Day9lib):
-    """ Puzzle 1 solution """
+    """ Puzzle 1 and 2 solution """
     sum_of_prediction = 0
 
     def __init__(self):
