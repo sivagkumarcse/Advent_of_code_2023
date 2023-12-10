@@ -9,29 +9,128 @@ class InnerAreaCalculator(Day10lib):
     """ Puzzle 2 solution """
 
     # Class variable
-    array_2d = None
     loop_indices = None
-    outer_indices = None
+    bigger_maze = None
 
     def __init__(self):
         super().__init__()
-        self.array_2d = []
         self.loop_indices = []
-        self.outer_indices = []
+        self.bigger_maze = []
+
 
     def run(self):
         """ Run method """
         self.main()
 
+    def initialize_bigger_maze(self):
+        """ Initialize a maze 3 times the original input to map
+        one element to 9 element. So area outside loop can be
+        effectively flooded.
+        """
+        for _ in itertools.repeat(None, 3*(self.max_row)):
+            line = []
+            for _ in itertools.repeat(None, 3*(self.max_column)):
+                line.append('0')
+            self.bigger_maze.append(line)
+
+    def map_loop_to_bigger_maze(self, filler, bit_map, i, j):
+        """ Draw a filler for a loop element in bigger maze"""
+        for map_iter in range (0, 9):
+            i_index = int ( (3 * i) + (map_iter / 3) )
+            j_index = int ( (3 * j) + (map_iter % 3) )
+            self.bigger_maze[i_index][j_index] = \
+                filler if (bit_map>>map_iter & 1) else '0'
+
+    def compute_untouched_inner_area(self):
+        """ After flooding find 3x3 0s, which represent the area inside loop """
+        answer = 0
+        # For every element in origial content, check if its bigger maze 3x3
+        # is all 0
+        for i, line in enumerate(self.content):
+            for j in range(len(line.strip())):
+                is_all_zero = True
+                for map_iter in range (0, 9):
+                    i_index = int ( (3 * i) + (map_iter / 3) )
+                    j_index = int ( (3 * j) + (map_iter % 3) )
+                    if self.bigger_maze[i_index][j_index] != '0':
+                        is_all_zero = False
+                        break
+                answer += 1 if is_all_zero else 0
+        return answer
+
+    def find_untouched_area(self):
+        """ Find count of elements with value '0' """
+        area = 0
+        for row in self.bigger_maze:
+            area += row.count('0')
+        return area
+
+    def print_bigger_maze(self):
+        """ Print bigger maze for debug purpose """
+        print("Bigger Maze: \n")
+        for line in self.bigger_maze:
+            print(*line)
+
+    def eleminate_outer_area(self):
+        """ Set 1 for elements in outer area by flooding every recursion """
+        inital_area = self.find_untouched_area()
+        #print(f"Initial outer area is {inital_area}")
+        for row_index,row in enumerate(self.bigger_maze):
+            for column_index in range(0, len(row)):
+                if self.bigger_maze[row_index][column_index] not in ['#','+','1']:
+                    if row_index in [0, (self.max_row*3-1)] or\
+                       column_index in [0,(3*self.max_column-1)]:
+                        self.bigger_maze[row_index][column_index] = '1'
+                    elif self.bigger_maze[row_index-1][column_index] == '1' or \
+                         self.bigger_maze[row_index+1][column_index] == '1' or \
+                         self.bigger_maze[row_index][column_index-1] == '1' or \
+                         self.bigger_maze[row_index][column_index+1] == '1':
+                        self.bigger_maze[row_index][column_index] = '1'
+
+        modified_area = self.find_untouched_area()
+        #print(f"Modified outer area is {modified_area}")
+
+        # If no improvement from flooding, return
+        if inital_area == modified_area:
+            return
+        self.eleminate_outer_area()
+
+    def area_finder(self):
+        """ Interesting solution inspired from r/user/EViLeleven/ """
+        self.initialize_bigger_maze()
+        for i, line in enumerate(self.content):
+            for j, char in enumerate(line.strip()):
+                if [i,j] in self.loop_indices:
+                    filler = '#'
+                    if char == 'S':
+                        filler = '+'
+                        bit_map = 0x1FF
+                    if char == '-':
+                        bit_map = 0x38
+                    if char ==  '|':
+                        bit_map = 0x92
+                    if char ==  'J':
+                        bit_map = 0x1A
+                    if char ==   '7':
+                        bit_map = 0x98
+                    if char ==  'F':
+                        bit_map = 0xB0
+                    if char ==  'L':
+                        bit_map = 0x32
+                    self.map_loop_to_bigger_maze(filler, bit_map, i, j)
+        self.eleminate_outer_area()
+        return self.compute_untouched_inner_area()
+
     def main(self):
         """ Main method """
         # Use any input file
         content = self.read_file_content(InputLoc.ORIGINAL_INPUT)
+
+        # Loop and make a list of indices of the loop element
         for index,line in enumerate(content):
-            self.array_2d.append(list(line.strip()))
             if 'S' in line:
                 starting_index = Position(index, line.index('S'))
-
+                break
         self.loop_indices.append([starting_index.x,starting_index.y])
         next_index = self.next_step_index(starting_index)
         while next_index.is_different(starting_index):
@@ -40,156 +139,7 @@ class InnerAreaCalculator(Day10lib):
             if next_index is None:
                 break
 
-        for row_index,line in enumerate(self.array_2d):
-            for column_index in range (len(line)):
-                if [row_index, column_index] in self.loop_indices:
-                    self.array_2d[row_index][column_index] = 'L'
-                else:
-                    self.array_2d[row_index][column_index] = '0'
-
-        print (f"Area of inner loop is {self.print_bigger_maze()}")
-
-    def print_bigger_maze(self):
-        """ Interesting solution from r/user/EViLeleven/ """
-        bigger_maze_visual = []#self.max_row*3]
-        for _ in itertools.repeat(None, 3*(self.max_row+1)):
-            line = []
-            for _ in itertools.repeat(None, 3*(self.max_column+1)):
-                line.append('1')
-            bigger_maze_visual.append(line)
-
-        for i, line in enumerate(self.content):
-            for j, char in enumerate(line):
-                if [i, j] not in self.loop_indices:
-                    bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                    bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '0'
-                    bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                    bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '0'
-                    bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '0'
-                    bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '0'
-                    bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                    bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '0'
-                    bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                else:
-                    if char == 'S':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = "+"
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = "+"
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = "+"
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = "+"
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = "+"
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = "+"
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = "+"
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = "+"
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = "+"
-                    if char ==  '-':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                    if char ==  '|':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                    if char ==  'J':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                    if char ==   '7':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                    if char ==  'F':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-                    if char ==  'L':
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] = '0'
-                        bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] = '0'
-                        bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] = '#'
-                        bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] = '0'
-
-        bigger_maze_visual = self.t2_eleminate_outer_area(bigger_maze_visual)
-
-        answer2 = 0
-        for i, line in enumerate(self.content):
-            for j, char in enumerate(line):
-                if bigger_maze_visual[(i * 3) + 0][(j * 3) + 0] == "0" and \
-                   bigger_maze_visual[(i * 3) + 1][(j * 3) + 0] == "0" and \
-                   bigger_maze_visual[(i * 3) + 2][(j * 3) + 0] == "0" and \
-                   bigger_maze_visual[(i * 3) + 0][(j * 3) + 1] == "0" and \
-                   bigger_maze_visual[(i * 3) + 1][(j * 3) + 1] == "0" and \
-                   bigger_maze_visual[(i * 3) + 2][(j * 3) + 1] == "0" and \
-                   bigger_maze_visual[(i * 3) + 0][(j * 3) + 2] == "0" and \
-                   bigger_maze_visual[(i * 3) + 1][(j * 3) + 2] == "0" and \
-                   bigger_maze_visual[(i * 3) + 2][(j * 3) + 2] == "0":
-                    answer2 += 1
-
-        return answer2
-
-    def t2_find_untouched_area(self, bigger_maze_visual):
-        """ Find count of elements with value '0' """
-        area = 0
-        for row in bigger_maze_visual:
-            area += row.count('0')
-        return area
-
-    def t2_eleminate_outer_area(self, bigger_maze_visual):
-        """ Set 1 for elements in outer area """
-        inital_area = self.t2_find_untouched_area(bigger_maze_visual)
-        print(f"Initial area is {inital_area}")
-        for row_index,row in enumerate(bigger_maze_visual):
-            for column_index in range(0, len(row)):
-                if bigger_maze_visual[row_index][column_index] not in ['#','+','1']:
-                    if row_index in [0, (self.max_row*3-1)] or\
-                       column_index in [0,(3*self.max_column-1)]:
-                        bigger_maze_visual[row_index][column_index] = '1'
-                    elif bigger_maze_visual[row_index-1][column_index] == '1' or \
-                         bigger_maze_visual[row_index+1][column_index] == '1' or \
-                         bigger_maze_visual[row_index][column_index-1] == '1' or \
-                         bigger_maze_visual[row_index][column_index+1] == '1':
-                        bigger_maze_visual[row_index][column_index] = '1'
-
-        modified_area = self.t2_find_untouched_area(bigger_maze_visual)
-        print(f"Modified area is {modified_area}")
-
-        # Exit condition of recurssion
-        if inital_area == modified_area:
-            return bigger_maze_visual
-        return self.t2_eleminate_outer_area(bigger_maze_visual)
+        print (f"Area of inner loop is {self.area_finder()}")
 
 if __name__ == "__main__":
     innerAreaCalculator = InnerAreaCalculator()
