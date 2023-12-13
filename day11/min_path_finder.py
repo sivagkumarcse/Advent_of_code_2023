@@ -1,10 +1,10 @@
-""" Puzzle 1 """
+""" Puzzle 1 and 2 """
 #!/usr/bin/python3
 from day11_lib import Day11lib
 from day11_lib import InputLoc
 
 class MinPathFinder(Day11lib):
-    """ Puzzle 1 solution """
+    """ Puzzle 1 and 2 solution """
     min_path_list = []
 
     def __init__(self):
